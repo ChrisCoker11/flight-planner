@@ -1,13 +1,12 @@
 // lib/tools.ts
-// Port of tools.py. Same two-part structure:
-//   1. FLIGHT_SEARCH_DECLARATION — the schema Gemini reads
-//   2. searchFlights()           — the actual function that runs
-//   3. runTool()                 — dispatcher
+// Same structure as before — schema + function + dispatcher.
+// The only change: searchFlights now calls the Duffel API instead of mock data,
+// so it's async. runTool is now async too, and route.ts awaits it.
 
 import { FunctionDeclaration, SchemaType } from "@google/generative-ai";
-import { MOCK_FLIGHTS } from "./mockData";
+import { searchDuffelFlights } from "./duffel";
 
-// --- Part 1: Schema ---
+// --- Part 1: Schema (unchanged) ---
 
 export const FLIGHT_SEARCH_DECLARATION: FunctionDeclaration = {
   name: "search_flights",
@@ -32,49 +31,35 @@ export const FLIGHT_SEARCH_DECLARATION: FunctionDeclaration = {
       },
       max_price: {
         type: SchemaType.NUMBER,
-        description: "Optional maximum price in USD to filter results",
+        description: "Optional maximum price to filter results",
       },
     },
     required: ["origin", "destination", "date"],
   },
 };
 
-// --- Part 2: Function ---
+// --- Part 2: Function (now async — calls Duffel) ---
 
-function searchFlights(
+async function searchFlights(
   origin: string,
   destination: string,
   date: string,
   max_price?: number
-): string {
-  origin = origin.toUpperCase();
-  destination = destination.toUpperCase();
-
-  let results = MOCK_FLIGHTS.filter(
-    (f) =>
-      f.origin === origin &&
-      f.destination === destination &&
-      f.departure.startsWith(date)
+): Promise<string> {
+  return searchDuffelFlights(
+    origin.toUpperCase(),
+    destination.toUpperCase(),
+    date,
+    max_price
   );
-
-  if (max_price !== undefined) {
-    results = results.filter((f) => f.price_usd <= max_price);
-  }
-
-  results.sort((a, b) => a.price_usd - b.price_usd);
-
-  if (results.length === 0) {
-    return JSON.stringify({
-      error: `No flights found from ${origin} to ${destination} on ${date}.`,
-    });
-  }
-
-  return JSON.stringify({ flights: results, count: results.length }, null, 2);
 }
 
-// --- Part 3: Dispatcher ---
+// --- Part 3: Dispatcher (now async) ---
 
-export function runTool(name: string, args: Record<string, unknown>): string {
+export async function runTool(
+  name: string,
+  args: Record<string, unknown>
+): Promise<string> {
   if (name === "search_flights") {
     return searchFlights(
       args.origin as string,

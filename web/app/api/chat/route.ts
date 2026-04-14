@@ -75,13 +75,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ reply: response.text() });
     }
 
-    // Run each tool and collect results
-    const toolResults = functionCalls.map((fc) => ({
-      functionResponse: {
-        name: fc.name,
-        response: { result: runTool(fc.name, fc.args as Record<string, unknown>) },
-      },
-    }));
+    // Run each tool and collect results (await since Duffel is async)
+    const toolResults = await Promise.all(
+      functionCalls.map(async (fc) => ({
+        functionResponse: {
+          name: fc.name,
+          response: { result: await runTool(fc.name, fc.args as Record<string, unknown>) },
+        },
+      }))
+    );
 
     // Send results back and continue the loop
     result = await chat.sendMessage(toolResults);
