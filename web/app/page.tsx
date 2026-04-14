@@ -64,11 +64,11 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-950">
       {/* Header */}
-      <header className="bg-white border-b px-6 py-4 shadow-sm">
-        <h1 className="text-xl font-semibold text-gray-800">Flight Finder</h1>
-        <p className="text-sm text-gray-500">Powered by Gemini</p>
+      <header className="bg-gray-900 border-b border-gray-800 px-6 py-4">
+        <h1 className="text-xl font-semibold text-white">Flight Finder</h1>
+        <p className="text-sm text-gray-400">Powered by Gemini</p>
       </header>
 
       {/* Messages */}
@@ -82,7 +82,7 @@ export default function Home() {
               className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
                 msg.role === "user"
                   ? "bg-blue-600 text-white rounded-br-sm"
-                  : "bg-white text-gray-800 border rounded-bl-sm shadow-sm"
+                  : "bg-gray-800 text-gray-100 border border-gray-700 rounded-bl-sm"
               }`}
             >
               {msg.text}
@@ -92,11 +92,11 @@ export default function Home() {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-white border rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
+            <div className="bg-gray-800 border border-gray-700 rounded-2xl rounded-bl-sm px-4 py-3">
               <span className="flex gap-1">
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:0ms]" />
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:150ms]" />
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:300ms]" />
               </span>
             </div>
           </div>
@@ -106,10 +106,10 @@ export default function Home() {
       </div>
 
       {/* Input */}
-      <div className="bg-white border-t px-4 py-4">
+      <div className="bg-gray-900 border-t border-gray-800 px-4 py-4">
         <div className="flex gap-2 max-w-3xl mx-auto">
           <input
-            className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 bg-gray-800 border border-gray-700 text-gray-100 placeholder-gray-500 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Ask about flights..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
