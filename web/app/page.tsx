@@ -18,8 +18,6 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // history is in Gemini's format — sent to the API on every request
-  // so the agent always has full conversation context
   const historyRef = useRef<Content[]>([]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -45,7 +43,6 @@ export default function Home() {
       const data = await res.json();
       const reply: string = data.reply ?? data.error ?? "Something went wrong.";
 
-      // Update Gemini history for next turn
       historyRef.current = [
         ...historyRef.current,
         { role: "user", parts: [{ text }] },

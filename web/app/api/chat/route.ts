@@ -1,16 +1,3 @@
-// app/api/chat/route.ts
-//
-// This is the agent loop — a Next.js API route that the UI calls on every message.
-//
-// The frontend sends:
-//   { message: string, history: GeminiMessage[] }
-//
-// We run the full agent loop here (including any tool calls) and return:
-//   { reply: string }
-//
-// The frontend never sees tool calls — it only ever receives the final text answer.
-// This keeps the UI simple and the agent logic entirely server-side.
-
 import { GoogleGenerativeAI, Content } from "@google/generative-ai";
 import { FLIGHT_SEARCH_DECLARATION, runTool } from "@/lib/tools";
 import { NextRequest, NextResponse } from "next/server";
@@ -34,9 +21,8 @@ The search_flights tool returns a list of flight objects. Each object contains:
 - origin, destination
 - departure and arrival (datetime strings)
 - duration_hours
-- price_usd
+- price and currency
 - stops (0 = nonstop, 1+ = connecting)
-- seats_left
 
 Use ALL of these fields when answering follow-up questions. Never say a field is
 unavailable — if you already called the tool this conversation, the data is in
@@ -60,10 +46,8 @@ export async function POST(req: NextRequest) {
     tools: [{ functionDeclarations: [FLIGHT_SEARCH_DECLARATION] }],
   });
 
-  // Restore conversation history so the agent has full context
   const chat = model.startChat({ history });
 
-  // Agent loop — identical concept to agent.py
   let result = await chat.sendMessage(message);
 
   while (true) {
@@ -71,11 +55,9 @@ export async function POST(req: NextRequest) {
     const functionCalls = response.functionCalls();
 
     if (!functionCalls || functionCalls.length === 0) {
-      // No tool calls — return the final text answer
       return NextResponse.json({ reply: response.text() });
     }
 
-    // Run each tool and collect results (await since Duffel is async)
     const toolResults = await Promise.all(
       functionCalls.map(async (fc) => ({
         functionResponse: {
@@ -85,7 +67,6 @@ export async function POST(req: NextRequest) {
       }))
     );
 
-    // Send results back and continue the loop
     result = await chat.sendMessage(toolResults);
   }
 }

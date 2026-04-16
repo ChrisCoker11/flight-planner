@@ -1,6 +1,3 @@
-// lib/mockData.ts
-// Direct port of mock_data.py — same data, just TypeScript types added.
-
 export interface Flight {
   flight_number: string;
   airline: string;

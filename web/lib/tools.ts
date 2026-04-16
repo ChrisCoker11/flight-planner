@@ -1,12 +1,5 @@
-// lib/tools.ts
-// Same structure as before — schema + function + dispatcher.
-// The only change: searchFlights now calls the Duffel API instead of mock data,
-// so it's async. runTool is now async too, and route.ts awaits it.
-
 import { FunctionDeclaration, SchemaType } from "@google/generative-ai";
 import { searchDuffelFlights } from "./duffel";
-
-// --- Part 1: Schema (unchanged) ---
 
 export const FLIGHT_SEARCH_DECLARATION: FunctionDeclaration = {
   name: "search_flights",
@@ -38,8 +31,6 @@ export const FLIGHT_SEARCH_DECLARATION: FunctionDeclaration = {
   },
 };
 
-// --- Part 2: Function (now async — calls Duffel) ---
-
 async function searchFlights(
   origin: string,
   destination: string,
@@ -53,8 +44,6 @@ async function searchFlights(
     max_price
   );
 }
-
-// --- Part 3: Dispatcher (now async) ---
 
 export async function runTool(
   name: string,

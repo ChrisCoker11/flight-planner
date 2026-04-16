@@ -1,14 +1,3 @@
-// lib/duffel.ts
-//
-// Duffel API client for real flight search.
-//
-// Duffel's flow:
-//   1. POST /air/offer_requests?return_offers=true  — search for flights
-//   2. The response includes offers with prices, airlines, schedules
-//
-// We map Duffel's verbose response shape into the same simple format
-// our agent already understands, so the system prompt doesn't need to change.
-
 const DUFFEL_BASE = "https://api.duffel.com";
 
 export interface Flight {
@@ -24,7 +13,6 @@ export interface Flight {
   stops: number;
 }
 
-// Duffel durations come as ISO 8601 e.g. "PT7H30M"
 function parseDurationHours(iso: string): number {
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
   if (!match) return 0;
@@ -99,7 +87,6 @@ export async function searchDuffelFlights(
 
   flights.sort((a, b) => a.price - b.price);
 
-  // Cap at 5 results to keep the context concise
   const results = flights.slice(0, 5);
 
   if (results.length === 0) {
